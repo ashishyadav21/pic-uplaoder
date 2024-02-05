@@ -1,0 +1,266 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "version": "2.0.0",
+        "title": "Simple API Overview",
+        "description": "This is to check APIs Configuration",
+        "contact": {},
+        "license": {}
+    },
+    "servers": [
+        {
+          "url": "http://localhost:3000",
+          "description": "This is my local server."
+        },
+        {
+          "url": "http://staging-api.example.com",
+          "description": "Optional server description, e.g. Internal staging server for testing"
+        }
+      ],
+    "$schemes":["http","Https"], 
+     "paths": {
+        "/users": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                      "BearerAuth": []
+                    }
+                  ],
+                "summary": "Get all users",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref":"#/definitions/models.UserResponse"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+
+                "summary": "Create a Users",
+                "requestBody":{
+                        "description": "Create a User",
+                        "required": true,
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                                "type":"object",
+                                "$ref": "#/definitions/models.createUserRequest"
+                            }
+                          },
+                          "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/definitions/models.createUserRequest"
+                            }
+                          }
+                      }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}":{
+            "get":{
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                      "BearerAuth": []
+                    }
+                  ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "name": "x-auth-token",
+                        "in": "header",
+                        "description": "an authorization header",
+                        "required": true,
+                        "type": "string"
+                      }
+                ],
+                "summary": "Get user detail",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref":"#/definitions/models.UserResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/signin": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+
+                "summary": "Signin User",
+                "requestBody":{
+                        "description": "Login to account",
+                        "required": true,
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                                "type":"object",
+                                "$ref": "#/definitions/models.signinUserRequest"
+                            }
+                          },
+                          "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/definitions/models.signinUserRequest"
+                            }
+                          }
+                      }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "definitions": {
+        "models.securitySchemes":{
+            "bearerAuth":{
+                "type":"http",
+                "scheme":"bearerAuth",
+                "bearerFormat":"JWT"
+            }
+        },
+        "models.createUserRequest": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "example": "Ashish"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "passw"
+                },
+                "dateofbirth": {
+                    "type": "string",
+                    "example": "21/07/1992"
+                },
+                "firstName": {
+                    "type": "string",
+                    "example": "Ashish"
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Yadav"
+                },
+                "email":{
+                    "type":"string",
+                    "example":"ashish@gmail.com"
+                }
+            }
+        },
+
+        "models.signinUserRequest":{
+            "type":"object",
+            "properties": {
+                "username":{
+                    "type":"string",
+                    "example":"ashish"
+                },
+                "password" :{
+                    "type":"string",
+                    "example":"asadsd"
+                }            
+            }
+        },
+        "models.UserResponse":{
+            "type": "object",
+            "properties":{
+                "username": {
+                    "type":"string",
+                    "example": "Ashish"
+                },
+                "userStatus":{
+                    "type": "string",
+                    "example":"active"
+                },
+                "token":{
+                    "type":"string",
+                    "example": "eeqqquerhbsayugduyashgdasd"
+                }
+            }
+        },
+
+        "models.ErrorResponse": {
+            "type":"object",
+            "properties":{
+                "status":{
+                    "type":"string"
+                }
+            }
+        }
+    },
+
+    "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+              "type": "http",
+              "scheme": "bearer",
+              "bearerFormat": "JWT"
+            }
+      }
+    } 
+}
+
+
