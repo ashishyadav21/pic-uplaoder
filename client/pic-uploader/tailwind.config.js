@@ -2,6 +2,14 @@ module.exports = {
   purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   darkMode: false, // or 'media' or 'class'
   theme: {
+    colors: {
+      'white': '#ffffff',
+      'purple': '#3f3cbb',
+      'midnight': '#121063',
+      'metal': '#565584',
+      'tahiti': '#3ab7bf',
+      'silver': '#ecebff',
+    },
     extend: {
       margin: {
         320: '320px',
@@ -39,15 +47,20 @@ module.exports = {
         620: '620px',
       },
       textColor: {
-        lightGray: '#F1EFEE',
+        lightGray: '#9ca3af',
         primary: '#FAFAFA',
         secColor: '#efefef',
         navColor: '#BEBEBE',
+        white: '#FFFFFF',
+        red: '#7f1d1d'
       },
       backgroundColor: {
         mainColor: '#FBF8F9',
         secondaryColor: '#F0F0F0',
         blackOverlay: 'rgba(0, 0 ,0 ,0.7)',
+        pinkColor: '#155e75',
+        transparentColor: '#0000ffff',
+        buttonPrimaryColor: '22d3ee'
       },
       keyframes: {
         'slide-in': {

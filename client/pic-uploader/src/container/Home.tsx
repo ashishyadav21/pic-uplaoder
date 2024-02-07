@@ -1,30 +1,31 @@
 
-import React, { useEffect } from 'react'
-import { useAuth0 } from "@auth0/auth0-react";
-import { useMutation } from 'react-query';
+import React, { useState } from 'react'
+import { Sidebar } from '../components'
+import { HiMenu } from 'react-icons/hi'
+import { AiFillCloseCircle } from 'react-icons/ai'
+import logo from '../assets/logo.png'
 
-
-const createUserInSanity = async (user: any) => {
-  // Your logic to create a user in Sanity
-  // Use Sanity client or fetch API to send a request to your Sanity API
-  // Example: sanityClient.create({ ... });
-};
+import { Link, Route, Routes } from 'react-router-dom'
 
 const Home = () => {
-  const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  const [toggleSidebar, setToggleSidebar] = useState<boolean>(false)
+  console.log("ocalStorage.getItem('user') -->", localStorage.getItem('user'))
+  const user = localStorage.getItem('user') !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '') : localStorage.clear()
 
-  const { mutate } = useMutation(createUserInSanity);
-
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      mutate(user);
-    }
-  }, [isAuthenticated, user, mutate]);
-
-  console.log("user ----<", user, isAuthenticated)
   return (
-    <div>
-      {!!isAuthenticated && "Home"}
+    <div className='flex bg-gray-50 md:flex-row flex-col h-screen transaction-height duration-75 ease'>
+      <div className='hidden md:flex h-screen flex-initial'>
+        <Sidebar />
+      </div>
+      <div className='flex md:hidden flex-row'>
+        <HiMenu fontSize={40} className='cursor-pointer' onClick={() => setToggleSidebar(false)} />
+        <Link to='/'>
+          <img src={logo} alt='logo' className='w-28' />
+        </Link>
+        <Link to={`user-profile/${user?.id}`}>
+          <img src={logo} alt='logo' className='w-28' />
+        </Link>
+      </div>
     </div>
   )
 }

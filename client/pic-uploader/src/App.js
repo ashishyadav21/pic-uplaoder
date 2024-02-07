@@ -1,16 +1,20 @@
 import './App.css';
-import { Routes, Route, useNavigate } from "react-router-dom"
+import { Routes, Route } from "react-router-dom"
 import Login from "./components/Login";
 import Home from "./container/Home";
+import PrivateRoute from "./auth/PrivateRoutes"
 
 function App() {
   return (
     <Routes>
-      <Route index path="/" element={<Login />} />
-      <Route path="/home" element={<Home />} />
+      <Route element={<PrivateRoute />}>
+        <Route path="/home" element={<Home />} />
+      </Route>
+      <Route index path="/login" element={<Login />} />
     </Routes>
 
   );
 }
 
 export default App;
+

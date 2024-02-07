@@ -6,7 +6,7 @@ var logger = require('morgan');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 const YAML = require('yamljs')
- 
+
 require('dotenv').config()
 
 var app = express();
@@ -16,7 +16,7 @@ app.use(express.json())
 /* to import .json file directly,
  you have to use require and directly send it to swaggerUI.Setup */
 
- 
+
 /* Fir YAML you have to declare a const swaggerDefination and passed that here,
   --> You need to load the yaml file using YAML.laod('path to yaml file')
     and pass that into SwaggerUi.setup
@@ -43,20 +43,37 @@ var usersRouter = require('./routes/users');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
- 
+
+
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,PATCH,PUT,POST,DELETE");
+  res.header("Access-Control-Expose-Headers", "Content-Length");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Accept, Authorization,x-auth-token, Content-Type, X-Requested-With, Range"
+  );
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  } else {
+    return next();
+  }
+});
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
- 
+
 app.use('/users', usersRouter);
 app.use('/', indexRouter);
 
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

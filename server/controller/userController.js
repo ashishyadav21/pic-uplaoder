@@ -38,6 +38,13 @@ exports.userRegister = async (req, res) => {
   const insertQuery = 'INSERT INTO users (id, username, password, dateofbirth, firstname, lastname, email) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *';
   const values = [uuidv4(), data.username, ciphertext, data.dateofbirth, data.firstName, data.lastName, data.email];
 
+  const token = jwt.sign(
+    {
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+      username: response.data.username,
+    },
+    process.env.JWT_SECRET
+  );
 
   pool.query(insertQuery, values, (error, result) => {
     if (error) {
@@ -45,7 +52,12 @@ exports.userRegister = async (req, res) => {
     } else {
       const insertedUser = result.rows[0];
       console.log('User inserted successfully:', insertedUser);
-      res.status(201).json({ user: insertedUser, message: 'User created successfully', success: true });
+      res.status(201).json({
+        result: {
+          token,
+          user: insertedUser,
+        }, message: 'User created successfully', success: true
+      });
 
     }
   })
