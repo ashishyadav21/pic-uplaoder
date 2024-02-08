@@ -7,10 +7,10 @@ const { v4: uuidv4 } = require('uuid');
 
 
 
-const {pool} = require('../config');
+const { pool } = require('../config');
 const { catchErrors } = require('../handlers/errorHandler');
-const {userRegister, login, getAllUser, getUserDetail} = require('../controller/userController')
- 
+const { userRegister, login, getAllUser, getUserDetail } = require('../controller/userController')
+
 
 /*   route to get all the user details */
 router.route('/').get(catchErrors(getAllUser));
