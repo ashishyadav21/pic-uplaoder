@@ -204,6 +204,39 @@
                     }
                 }
             }
+        },
+         "/images/{key}":{
+            "get":{
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                      "BearerAuth": []
+                    }
+                  ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "key",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    } 
+                ],
+                "summary": "Get user detail",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref":"#/definitions/models.UserResponse"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
 

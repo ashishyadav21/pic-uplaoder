@@ -1,9 +1,10 @@
 const CryptoJS = require("crypto-js");
 const { v4: uuidv4 } = require('uuid');
 const zod = require('zod');
-const { pool } = require('../config');
+// const { pool } = require('../config');
 var jwt = require('jsonwebtoken');
-
+const { PrismaClient } = require('@prisma/client')
+const prisma = new PrismaClient()
 
 const createUserSchema = zod.object({
   username: zod.string(),
@@ -23,20 +24,29 @@ const signinUserSchema = zod.object({
 const numberSchema = zod.string();
 
 exports.userRegister = async (req, res) => {
-  console.log("req --->", req.body)
 
   const response = createUserSchema.safeParse(req.body);
   const { data } = response
 
-  console.log("data --->", data.password)
   var ciphertext = CryptoJS.AES.encrypt(data?.password, 'secret key 123').toString();
 
   if (!response.success) {
     return res.status(400).json({ message: 'Invalid request data', success: false });
   }
 
-  const insertQuery = 'INSERT INTO users (id, username, password, dateofbirth, firstname, lastname, email) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *';
-  const values = [uuidv4(), data.username, ciphertext, data.dateofbirth, data.firstName, data.lastName, data.email];
+  const existingUser = await prisma.users.findUnique({
+    where: {
+      username: data.username,
+    },
+    select: {
+      username: true,
+    }
+  });
+
+
+  if (existingUser) {
+    return res.status(400).json({ error: 'User with this username already exists' });
+  }
 
   const token = jwt.sign(
     {
@@ -46,88 +56,89 @@ exports.userRegister = async (req, res) => {
     process.env.JWT_SECRET
   );
 
-  pool.query(insertQuery, values, (error, result) => {
-    if (error) {
-      console.error('Error inserting user details:', error);
-    } else {
-      const insertedUser = result.rows[0];
-      console.log('User inserted successfully:', insertedUser);
-      res.status(201).json({
-        result: {
-          token,
-          user: insertedUser,
-        }, message: 'User created successfully', success: true
-      });
-
+  const result = await prisma.users.create({
+    data: {
+      username: data.username,
+      password: ciphertext,
+      dateofbirth: data.dateofbirth,
+      firstname: data.firstName,
+      lastname: data.lastName,
+      email: data.email,
+      id: uuidv4()
     }
-  })
+  });
+
+
+  if (result) {
+    res.status(201).json({
+      result: {
+        token,
+        user: result,
+      }, message: 'User created successfully', success: true
+    });
+
+  } else {
+    return res.status(404).json({
+      "message": "User is not able to created"
+    })
+  }
 }
 
 exports.login = async (req, res) => {
-  const insertQuery = 'select * from users'
-
   const response = signinUserSchema.safeParse(req.body);
 
-  pool.query(insertQuery, (error, result) => {
-    if (error) {
-      res.status(200).json({ message: "Not able to get users detail." })
-    } else {
-      const allUsers = result.rows;
-      const userExist = allUsers.some((user) => response.data.username.toLowerCase() === user.username.toLowerCase())
+  const token = jwt.sign(
+    {
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+      username: response.data.username,
+    },
+    process.env.JWT_SECRET
+  );
 
-      const token = jwt.sign(
-        {
-          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
-          username: response.data.username,
-        },
-        process.env.JWT_SECRET
-      );
-
-      if (!userExist) {
-        res.status(200).json({ message: "user is not exist in db." })
-      } else {
-        const user = allUsers.find((user) => response.data.username.toLowerCase() === user.username.toLowerCase())
-        var bytes = CryptoJS.AES.decrypt(user.password, 'secret key 123');
-        var originalText = bytes.toString(CryptoJS.enc.Utf8);
-
-        if (originalText.toLowerCase() === response.data.password.toLowerCase()) {
-          res.status(200).json({
-            success: true,
-            result: {
-              token,
-              user: {
-                name: user.name,
-                isLoggedIn: true,
-              },
-            },
-            message: "Successfully login",
-          })
-        } else {
-          res.status(200).json({ message: "password is not correct." })
-        }
-      }
+  const user = await prisma.users.findUnique({
+    where: {
+      username: response?.data?.username
     }
   })
+
+  if (user) {
+    var bytes = CryptoJS.AES.decrypt(user.password, 'secret key 123');
+    var originalText = bytes.toString(CryptoJS.enc.Utf8);
+
+    if (originalText.toLowerCase() === response.data.password.toLowerCase()) {
+      res.status(200).json({
+        success: true,
+        result: {
+          token,
+          user: {
+            name: user,
+            isLoggedIn: true,
+          },
+        },
+        message: "Successfully login",
+      })
+    }
+  } else {
+    res.status(200).json({ message: "user is not exist in db." })
+  }
+
 }
 
 exports.getAllUser = async (req, res) => {
 
-  const insertQuery = 'select * from users'
-
-  pool.query(insertQuery, (error, result) => {
-    if (error) {
-      console.error('Error receieving user details:', error);
-    } else {
-      const allUsers = result.rows;
-      res.status(201).json({ allUsers, message: 'All Users get successfully', success: true });
-    }
-  })
+  const allUsers = await prisma.users.findMany()
+  if (allUsers) {
+    res.status(201).json({ allUsers, message: 'All Users get successfully', success: true });
+  } else {
+    res.status(500).json({ "message": "not able to get all users" })
+  }
 }
 
 exports.getUserDetail = async (req, res) => {
   const request = numberSchema.safeParse(req.params.userId)
 
   const token = req.header("x-auth-token");
+  console.log(" request0000>", request)
 
   if (!token)
     return res.status(401).json({
@@ -146,24 +157,16 @@ exports.getUserDetail = async (req, res) => {
       jwtExpired: true,
     });
 
-  const insertQuery = 'select * from users'
 
-  pool.query(insertQuery, (error, result) => {
-    if (error) {
-      console.error('Error receieving user details:', error);
-    } else {
-      const allUsers = result.rows;
-      const user = allUsers.find((u) => {
-        return u.id === request.data
-      });
-
-      if (!user) {
-        return res.status(404).json({ message: 'User not sfound', success: false });
-      }
-
-      res.status(200).json({ user, message: 'User details', success: true });
+  const existingUser = await prisma.users.findUnique({
+    where: {
+      id: request.data,
     }
-  })
+  });
 
-
+  if (existingUser) {
+    res.status(200).json({ existingUser, message: 'User details', success: true });
+  } else {
+    return res.status(404).json({ message: 'User not sfound', success: false });
+  }
 }
