@@ -205,7 +205,7 @@
                 }
             }
         },
-         "/images/{key}":{
+         "/image/{key}":{
             "get":{
                 "produces": [
                     "application/json"

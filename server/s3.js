@@ -1,4 +1,6 @@
-const S3 = require('aws-sdk/clients/s3')
+const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
+const { v4: uuidv4 } = require('uuid');
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const bucketName = process.env.AWS_BUCKET_NAME
 const region = process.env.AWS_REGION
@@ -7,7 +9,7 @@ const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
 
 const fs = require('fs')
 
-const s3 = new S3({
+const s3Client = new S3Client({
     region,
     credentials: {
         accessKeyId,
@@ -16,6 +18,35 @@ const s3 = new S3({
 
 })
 
+const s3UploadV3 = async (file) => {
+    const uploadParams = {
+        Bucket: bucketName,
+        Body: file.buffer,
+        ContentType: 'image/jpeg',
+        Key: `uploads/${uuidv4()} - ${file.originalname}`
+    }
+
+    const resultOutput = await s3Client.send(new PutObjectCommand(uploadParams))
+
+    return { resultOutput, key: `uploads/${uuidv4()} - ${file.originalname}` }
+}
+
+const getObjectFromS3 = async (objectKey) => {
+
+    const command = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: objectKey
+    });
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+
+    return url
+};
+
+
+/* 
+
+
+Below two function to upload on S3 is using AWS version 2
 function uploadFile(file) {
     const fileStream = fs.createReadStream(file.path)
 
@@ -38,16 +69,12 @@ function getFileStream(fileKey) {
     }
 
     return s3.getObject(downloadParams).createReadStream()
-    // return s3.upload(uploadParams).promise()
 }
 
+*/
 
 
 exports.uploadFile = uploadFile
 exports.getFile = getFileStream
-
-
-
-
-
-// download file from s3
+exports.s3UploadV3 = s3UploadV3
+exports.getObjectFromS3 = getObjectFromS3
