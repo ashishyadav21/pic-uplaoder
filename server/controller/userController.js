@@ -1,7 +1,6 @@
 const CryptoJS = require("crypto-js");
 const { v4: uuidv4 } = require('uuid');
 const zod = require('zod');
-// const { pool } = require('../config');
 var jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()

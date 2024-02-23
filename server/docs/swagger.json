@@ -237,6 +237,105 @@
                     }
                 }
             }
+        },
+        "/post": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                      "BearerAuth": []
+                    }
+                ],
+                "summary": "Create a Post",
+                "requestBody":{
+                        "description": "Create a Post",
+                        "required": true,
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                                "type":"object",
+                                "$ref": "#/definitions/models.createPostRequest"
+                            }
+                          },
+                          "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/definitions/models.createPostRequest"
+                            }
+                          }
+                      }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.postResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/post/like": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                      "BearerAuth": []
+                    }
+                ],
+               
+                "summary": "Like a Post",
+                "requestBody":{
+                        "description": "Like a Post",
+                        "required": true,
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                                "type":"object",
+                                "$ref": "#/definitions/models.createLikeRequest"
+                            }
+                          },
+                          "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/definitions/models.createLikeRequest"
+                            }
+                          }
+                      }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.likeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
 
@@ -308,7 +407,102 @@
                 }
             }
         },
-
+         "models.createPostRequest":{
+            "type": "object",
+            "properties":{
+                "caption": {
+                    "type":"string",
+                    "example":"asdasdsad"
+                },   
+                "createdAt":{
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "userId":{
+                    "type":"string",
+                    "example": "cf925795-feea-4509-af15-f6b55ec16e65"
+                },
+                "image_url": {
+                    "type": "string",
+                    "example": "https//www.google.png"
+                },
+                "location": {
+                    "type": "string",
+                    "example": "Bahadurgarh Sapno ka Sehar"
+                },
+                "updatedAt":{
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+         "models.postResponse":{
+            "type": "object",
+            "properties":{
+                "caption": {
+                    "type":"string",
+                    "example": "Ashish"
+                },
+                "createdAt":{
+                    "type": "string",
+                    "example":"21/08/1288"
+                },
+                "userId":{
+                    "type":"string",
+                    "example": "eeqqquerhbsayugduyashgdasd"
+                },
+                "id": {
+                    "type":"string",
+                     "example":"we324rdweewrew" 
+                    }            
+                },
+                 "image_url": {
+                    "type": "string",
+                    "example": "https//www.google.png"
+                },
+                "location": {
+                    "type": "string",
+                    "example": "Bahadurgarh Sapno ka Sehar"
+                },
+                "updatedAt":{
+                    "type": "string",
+                    "format": "date-time"
+                }
+         },
+        "models.createLikeRequest":{
+            "type": "object",
+            "properties":{  
+                "createdAt":{
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "userId":{
+                    "type":"string",
+                    "example": "cf925795-feea-4509-af15-f6b55ec16e65"
+                },
+                "postId":{
+                    "type":"string",
+                    "example": "0b356510-1d62-4373-acff-2e1a4c1dc75c"
+                }
+            }
+        },
+        "models.likeResponse":{
+            "type": "object",
+            "properties":{  
+                "createdAt":{
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "userId":{
+                    "type":"string",
+                    "example": "cf925795-feea-4509-af15-f6b55ec16e65"
+                },
+                "postId":{
+                    "type":"string",
+                    "example": "0b356510-1d62-4373-acff-2e1a4c1dc75c"
+                }
+            }
+        },
         "models.ErrorResponse": {
             "type":"object",
             "properties":{

@@ -1,10 +1,20 @@
 import React from 'react'
+import logo from '../assets/logo.png'
 
-const Sidebar = () => {
+type User = {
+    firstName: '',
+    lastName: '',
+    image: ''
+}
+
+interface Props {
+    user: User,
+    closeToggle?: (value: boolean) => void
+}
+
+const Sidebar = (props: Props) => {
     return (
-        <div>
-            <img src="/images/f13a13a57ab6573c1df134fdc6b46d20" />
-        </div>
+        <div>Sidebar</div>
     )
 }
 

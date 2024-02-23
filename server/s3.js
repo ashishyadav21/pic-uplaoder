@@ -7,8 +7,6 @@ const region = process.env.AWS_REGION
 const accessKeyId = process.env.AWS_ACCESS_KEY
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
 
-const fs = require('fs')
-
 const s3Client = new S3Client({
     region,
     credentials: {
@@ -73,8 +71,5 @@ function getFileStream(fileKey) {
 
 */
 
-
-exports.uploadFile = uploadFile
-exports.getFile = getFileStream
 exports.s3UploadV3 = s3UploadV3
 exports.getObjectFromS3 = getObjectFromS3

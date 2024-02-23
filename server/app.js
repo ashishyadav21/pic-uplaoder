@@ -38,6 +38,8 @@ app.use('/apis', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var imageRouter = require('./routes/image');
+var postRouter = require('./routes/posts');
+
 
 
 // view engine setup
@@ -71,6 +73,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/users', usersRouter);
 app.use('/', indexRouter);
 app.use('/image', imageRouter)
+app.use('/post', postRouter)
+
 
 // error handler
 app.use(function (err, req, res, next) {

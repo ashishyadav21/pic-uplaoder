@@ -8,11 +8,11 @@ datasource db {
 }
 
 model images {
-  filename String @db.VarChar
-  filepath String @db.VarChar
-  mimetype String @db.VarChar
-  size     BigInt
-  id       String @id @db.Uuid
+  filename  String   @db.VarChar
+  filepath  String   @db.VarChar
+  mimetype  String   @db.VarChar
+  size      BigInt
+  id        String   @id @db.Uuid
   createdAt DateTime @default(now())
 }
 
@@ -25,4 +25,27 @@ model users {
   lastname    String? @db.VarChar
   email       String? @db.VarChar
   id          String  @id @db.Uuid
- }
+  posts       posts[]
+  likes       likes[]
+}
+
+model posts {
+  caption   String?  @db.VarChar
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  id        String   @id @db.Uuid
+  user      users    @relation(fields: [userId], references: [id])
+  userId    String   @db.Uuid
+  image_url String?  @db.VarChar
+  location  String?  @db.VarChar
+  likes     likes[]
+}
+
+model likes {
+  id        String   @id @db.Uuid
+  user      users    @relation(fields: [userId], references: [id])
+  userId    String   @db.Uuid
+  post      posts    @relation(fields: [postId], references: [id])
+  postId    String   @db.Uuid
+  createdAt DateTime @default(now())
+}
