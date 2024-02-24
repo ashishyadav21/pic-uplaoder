@@ -84,6 +84,54 @@
                         }
                     }
                 }
+            },
+            "put":{
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                      "BearerAuth": []
+                    }
+                  ],
+                "parameters": [
+                    {
+                        "name": "x-auth-token",
+                        "in": "header",
+                        "description": "an authorization header",
+                        "required": true,
+                        "type": "string"
+                      }
+                ],
+                "requestBody":{
+                        "description": "Update a Post",
+                        "required": true,
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                                "type":"object",
+                                "$ref": "#/definitions/models.updateUserRequest"
+                            }
+                          },
+                          "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/definitions/models.updateUserRequest"
+                            }
+                          }
+                    }
+                },
+                "summary": "Update User Details",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref":"#/definitions/models.UserResponse"
+                            }
+                        }
+                    }
+                }
             }
         },
         "/users/{userId}":{
@@ -125,6 +173,7 @@
                     }
                 }
             }
+           
         },
         "/users/signin": {
             "post": {
@@ -250,6 +299,15 @@
                     {
                       "BearerAuth": []
                     }
+                  ],
+                "parameters": [
+                    {
+                        "name": "x-auth-token",
+                        "in": "header",
+                        "description": "an authorization header",
+                        "required": true,
+                        "type": "string"
+                      }
                 ],
                 "summary": "Create a Post",
                 "requestBody":{
@@ -285,6 +343,45 @@
                         }
                     }
                 }
+            },
+             "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                      "BearerAuth": []
+                    }
+                  ],
+                "parameters": [
+                    {
+                        "name": "x-auth-token",
+                        "in": "header",
+                        "description": "an authorization header",
+                        "required": true,
+                        "type": "string"
+                      }
+                ],
+                "summary": "Get All Posts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.postResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/post/like": {
@@ -299,6 +396,15 @@
                     {
                       "BearerAuth": []
                     }
+                ],
+                "parameters": [
+                    {
+                        "name": "x-auth-token",
+                        "in": "header",
+                        "description": "an authorization header",
+                        "required": true,
+                        "type": "string"
+                      }
                 ],
                
                 "summary": "Like a Post",
@@ -332,6 +438,64 @@
                         "schema": {
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/comments": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                      "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "x-auth-token",
+                        "in": "header",
+                        "description": "an authorization header",
+                        "required": true,
+                        "type": "string"
+                      }
+                ],
+                "summary": "Post a Comment",
+                "requestBody":{
+                        "description": "Post a Comment",
+                        "required": true,
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                                "type":"object",
+                                "$ref": "#/definitions/models.createCommentRequest"
+                            }
+                          },
+                          "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/definitions/models.createCommentRequest"
+                            }
+                          }
+                      }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.commentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.commentResponse"
                         }
                     }
                 }
@@ -376,7 +540,35 @@
                 }
             }
         },
-
+        "models.updateUserRequest": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "example": "Ashish"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "passw"
+                },
+                "dateofbirth": {
+                    "type": "string",
+                    "example": "21/07/1992"
+                },
+                "firstName": {
+                    "type": "string",
+                    "example": "Ashish"
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Yadav"
+                },
+                "email":{
+                    "type":"string",
+                    "example":"ashish@gmail.com"
+                }
+            }
+        },
         "models.signinUserRequest":{
             "type":"object",
             "properties": {
@@ -500,6 +692,52 @@
                 "postId":{
                     "type":"string",
                     "example": "0b356510-1d62-4373-acff-2e1a4c1dc75c"
+                }
+            }
+        },
+        "models.createCommentRequest": {
+            "type": "object",
+            "properties": {
+                "postId": {
+                    "type": "string",
+                    "example": "2c3af653-40f3-4eab-b8e3-3d1ebf3a2183"
+                },
+                 "updatedAt":{
+                    "type": "string",
+                    "format": "date-time"
+                },
+                 "createdAt":{
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "text":{
+                    "type": "string",
+                    "example": "A quick brown Jumps over the little lazy dog"
+                }
+            }
+        },
+         "models.commentResponse": {
+            "type": "object",
+            "properties": {
+                "postId": {
+                    "type": "string",
+                    "example": "2c3af653-40f3-4eab-b8e3-3d1ebf3a2183"
+                },
+                "username":{
+                    "type": "string",
+                    "example":"Ashish Yadav"
+                },
+                "updatedAt":{
+                    "type": "string",
+                    "format": "date-time"
+                },
+                 "createdAt":{
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "text":{
+                    "type": "string",
+                    "example": "A quick brown Jumps over the little lazy dog"
                 }
             }
         },

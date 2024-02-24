@@ -9,7 +9,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const { pool } = require('../config');
 const { catchErrors } = require('../handlers/errorHandler');
-const { userRegister, login, getAllUser, getUserDetail } = require('../controller/userController')
+const { userRegister, login, getAllUser, getUserDetail, updateUserProfile } = require('../controller/userController')
 
 
 /*   route to get all the user details */
@@ -24,5 +24,9 @@ router.route('/').post(catchErrors(userRegister));
 
 /*  request to logIn user*/
 router.route('/signin').post(catchErrors(login))
+
+/* update the user Profile  */
+router.route('/').put(catchErrors(updateUserProfile))
+
 
 module.exports = router;

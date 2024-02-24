@@ -39,6 +39,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var imageRouter = require('./routes/image');
 var postRouter = require('./routes/posts');
+var commentRouter = require('./routes/comments')
 
 
 
@@ -74,6 +75,8 @@ app.use('/users', usersRouter);
 app.use('/', indexRouter);
 app.use('/image', imageRouter)
 app.use('/post', postRouter)
+app.use('/comments', commentRouter)
+
 
 
 // error handler

@@ -14,6 +14,16 @@ const createUserSchema = zod.object({
   email: zod.string()
 });
 
+const updateUserSchema = zod.object({
+  username: zod.string(),
+  password: zod.string().optional(),
+  dateofbirth: zod.string().optional(),
+  firstname: zod.string().optional(),
+  lastname: zod.string().optional(),
+  email: zod.string().optional(),
+  imageUrl: zod.string().optional()
+});
+
 
 const signinUserSchema = zod.object({
   username: zod.string(),
@@ -137,7 +147,6 @@ exports.getUserDetail = async (req, res) => {
   const request = numberSchema.safeParse(req.params.userId)
 
   const token = req.header("x-auth-token");
-  console.log(" request0000>", request)
 
   if (!token)
     return res.status(401).json({
@@ -168,4 +177,43 @@ exports.getUserDetail = async (req, res) => {
   } else {
     return res.status(404).json({ message: 'User not sfound', success: false });
   }
+}
+
+exports.updateUserProfile = async (req, res) => {
+  const token = req.header("x-auth-token");
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const username = decoded.username
+  console.log(username)
+
+  const response = updateUserSchema.safeParse(req.body)
+  const { data } = response
+
+  if (!token)
+    return res.status(401).json({
+      success: false,
+      result: null,
+      message: "No authentication token, authorization denied.",
+      jwtExpired: true,
+    });
+
+  const verified = jwt.verify(token, process.env.JWT_SECRET);
+  if (!verified)
+    return res.status(401).json({
+      success: false,
+      result: null,
+      message: "Token verification failed, authorization denied.",
+      jwtExpired: true,
+    });
+
+  const updateUser = await prisma.users.update({
+    where: {
+      username: username,
+    },
+    data: {
+      ...data
+    },
+  })
+
+  res.status(200).json({ "message": "User Updated Successfully", user: updateUser })
 }
