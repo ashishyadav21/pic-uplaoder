@@ -8,7 +8,7 @@ function App() {
   return (
     <Routes>
       <Route element={<PrivateRoute />}>
-        <Route path="/home" element={<Home />} />
+        <Route path="/*" element={<Home />} />
       </Route>
       <Route index path="/login" element={<Login />} />
     </Routes>
