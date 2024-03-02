@@ -39,6 +39,7 @@ model posts {
   userId    String     @db.Uuid
   image_url String?    @db.VarChar
   location  String?    @db.VarChar
+  category  String?    @db.VarChar
   likes     likes[]
   comments  comments[]
 }
@@ -59,4 +60,5 @@ model comments {
   text      String   @db.VarChar
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+  userId    String   @db.Uuid
 }

@@ -1,6 +1,7 @@
 const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
 const { v4: uuidv4 } = require('uuid');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const fs = require('fs');
 
 const bucketName = process.env.AWS_BUCKET_NAME
 const region = process.env.AWS_REGION
@@ -17,16 +18,23 @@ const s3Client = new S3Client({
 })
 
 const s3UploadV3 = async (file) => {
+
+    const key = `uploads/${uuidv4()} - ${file.originalname}`
+
     const uploadParams = {
         Bucket: bucketName,
         Body: file.buffer,
         ContentType: 'image/jpeg',
-        Key: `uploads/${uuidv4()} - ${file.originalname}`
+        Key: key
     }
 
+    console.log("uploadParams----<", uploadParams)
     const resultOutput = await s3Client.send(new PutObjectCommand(uploadParams))
+    console.log("resultOutput ----<", resultOutput)
 
-    return { resultOutput, key: `uploads/${uuidv4()} - ${file.originalname}` }
+
+
+    return { resultOutput, key: key }
 }
 
 const getObjectFromS3 = async (objectKey) => {

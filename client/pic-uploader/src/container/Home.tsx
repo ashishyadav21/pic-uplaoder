@@ -1,11 +1,13 @@
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Sidebar } from '../components'
 import { HiMenu } from 'react-icons/hi'
 import { AiFillCloseCircle } from 'react-icons/ai'
 import logo from '../assets/logo.png'
 
 import { Link, Route, Routes } from 'react-router-dom'
+import UserProfile from '../components/UserProfile'
+import Pins from './Pins'
 
 const user = {
   firstName: 'Ashish',
@@ -15,7 +17,9 @@ const user = {
 
 const Home = () => {
   const [toggleSidebar, setToggleSidebar] = useState<boolean>(false)
-  console.log("ocalStorage.getItem('user') -->", localStorage.getItem('user'))
+  const scrollRef = useRef(null);
+
+  console.log("localStorage.getItem('user') -->", localStorage.getItem('user'))
   const user = localStorage.getItem('user') !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '') : localStorage.clear()
 
   return (
@@ -41,6 +45,13 @@ const Home = () => {
           <Sidebar user={user && user} closeToggle={setToggleSidebar} />
         </div>
       )}
+
+      <div className="pb-2 flex-1 h-screen overflow-y-scroll" ref={scrollRef}>
+        <Routes>
+          <Route path="/user-profile/:userId" element={<UserProfile />} />
+          <Route path="/*" element={<Pins user={user && user} />} />
+        </Routes>
+      </div>
     </div>
   )
 }

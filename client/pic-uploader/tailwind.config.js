@@ -9,6 +9,8 @@ module.exports = {
       'metal': '#565584',
       'tahiti': '#3ab7bf',
       'silver': '#ecebff',
+      'black': '#000000'
+
     },
     extend: {
       margin: {
@@ -60,7 +62,8 @@ module.exports = {
         blackOverlay: 'rgba(0, 0 ,0 ,0.7)',
         pinkColor: '#155e75',
         transparentColor: '#0000ffff',
-        buttonPrimaryColor: '22d3ee'
+        buttonPrimaryColor: '22d3ee',
+        black: '#000000'
       },
       keyframes: {
         'slide-in': {

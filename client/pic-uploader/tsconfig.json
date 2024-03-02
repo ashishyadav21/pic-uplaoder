@@ -21,6 +21,6 @@
     "rootDir": "./src",
     
   },
-  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.tsx", "src/**/*.d.ts", "src/index.css", "src/login.ts", "src/login.ts","src/**/*.jpg", "src/**/*.png", "src/**/*.mp4"],
+  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.tsx", "src/**/*.jsx", "src/**/*.d.ts", "src/index.css", "src/login.ts", "src/login.ts","src/**/*.jpg", "src/**/*.png", "src/**/*.mp4", "src/components/Spinner.tsx"],
   "exclude": ["node_modules"]
 }

@@ -10,7 +10,8 @@ const postCreateSchema = zod.object({
     userId: zod.string(),
     image_url: zod.string().optional(),
     location: zod.string().optional(),
-    updatedAt: zod.string()
+    updatedAt: zod.string(),
+    category: zod.string()
 });
 
 const postLikeSchema = zod.object({
@@ -40,25 +41,36 @@ exports.createPost = async (req, res) => {
             jwtExpired: true,
         });
 
+    console.log("req.- --->", req.body)
     const response = postCreateSchema.safeParse(req.body)
     const { data } = response
 
-    const result = await prisma.posts.create({
-        data: {
-            id: uuidv4(),
-            userId: data?.userId,
-            caption: data?.caption,
-            createdAt: data?.createdAt,
-            image_url: data?.image_url,
-            location: data?.location,
-            updatedAt: data?.updatedAt
-        }
-    })
+    try {
+        const result = await prisma.posts.create({
+            data: {
+                id: uuidv4(),
+                userId: data?.userId,
+                caption: data?.caption,
+                createdAt: data?.createdAt,
+                image_url: data?.image_url,
+                location: data?.location,
+                updatedAt: data?.updatedAt,
+                category: data?.category
+            }
+        })
 
-    res.status(200).json({
-        "message": 'post Created successfully',
-        "post": result
-    })
+        res.status(200).json({
+            "message": 'post Created successfully',
+            "post": result,
+            "status": true
+        })
+    }
+    catch (error) {
+        res.json({
+            "message": 'post Creation Failed',
+            "error": error
+        })
+    }
 }
 
 exports.postLike = async (req, res) => {
@@ -130,5 +142,41 @@ exports.getPost = async (req, res) => {
     });
 
     res.status(200).json({ "message": "all post", posts: posts })
+
+}
+
+exports.getCategoryPost = async (req, res) => {
+    const token = req.header("x-auth-token");
+    const categoryId = req.params.categoryId
+    console.log("categoryId --->", categoryId)
+    if (!token)
+        return res.status(401).json({
+            success: false,
+            result: null,
+            message: "No authentication token, authorization denied.",
+            jwtExpired: true,
+        });
+
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!verified)
+        return res.status(401).json({
+            success: false,
+            result: null,
+            message: "Token verification failed, authorization denied.",
+            jwtExpired: true,
+        });
+
+    const posts = await prisma.posts.findMany({
+        where: {
+            category: categoryId
+        },
+        include: {
+            likes: true,
+            comments: true
+        },
+    });
+
+    res.status(200).json({ "message": `Post Related to ${categoryId}`, posts: posts })
 
 }

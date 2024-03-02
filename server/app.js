@@ -6,6 +6,8 @@ var logger = require('morgan');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 const YAML = require('yamljs')
+const helmet = require("helmet")
+
 
 require('dotenv').config()
 
@@ -47,7 +49,20 @@ var commentRouter = require('./routes/comments')
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: {
+      allowOrigins: ['*']
+    },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ['*'],
+        scriptSrc: ["* data: 'unsafe-eval' 'unsafe-inline' blob:"]
+      }
+    }
+  })
+)
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");

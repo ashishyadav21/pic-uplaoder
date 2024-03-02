@@ -12,6 +12,7 @@ exports.uploadImage = async (req, res) => {
     const currentYear = new Date().getFullYear()
 
     if (s3Result) {
+
         const imageResult = await prisma.images.create({
             data: {
                 id: uuidv4(),
